@@ -1,0 +1,21 @@
+version: '3'
+services:
+  reverse-proxy:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    image: nginx:latest
+    volumes:
+     #- ./mount:/etc/nginx
+     # - ./mount/sites-enabled:/etc/nginx/sites-enabled
+     # - ./mount/ssl:/etc/nginx/ssl
+     - ./nginx/:/etc/nginx
+     - ./nginx/conf.d:/etc/nginx/conf.d
+     - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+     - ./nginx/ssl:/etc/nginx/ssl
+     # - ../../public:/etc/public
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - ENABLE_IPV6=true
+

@@ -1,0 +1,21 @@
+version: '3'
+services:
+  reverse-proxy:
+   image: nginx:latest
+   volumes:
+   - ./nginx/:/etc/nginx
+   - ./nginx/conf.d:/etc/nginx/conf.d
+   - ./nginx/ssl:/etc/nginx/ssl
+   - /var/www/html:/var/www/html
+   - /etc/letsencrypt:/etc/letsencrypt
+   ports:
+   - "80:80"
+   - "443:443"
+   extra_hosts:
+   - host.docker.internal:host-gateway
+  certbot:
+   image: certbot/certbot
+   volumes:
+    - /etc/letsencrypt:/etc/letsencrypt
+    - /var/www/html:/var/www/html
+   command: ["--version"]

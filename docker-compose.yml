@@ -12,6 +12,10 @@ services:
       - ./postgres14:/var/lib/postgresql/data
     environment:
       - 'POSTGRES_HOST_AUTH_METHOD=trust'
+    environment:
+      POSTGRES_USER: mastodon_user
+      POSTGRES_DB: mastodon_db
+      POSTGRES_PASSWORD: Nash1867!
 
   redis:
     restart: always
@@ -55,8 +59,8 @@ services:
   #     - '127.0.0.1:9200:9200'
 
   web:
-    build: .
-    image: tootsuite/mastodon
+    #build: .
+    image: tootsuite/mastodon:v4.1.0rc2
     restart: always
     env_file: .env.production
     command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
@@ -67,17 +71,18 @@ services:
       # prettier-ignore
       test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:3000/health || exit 1']
     ports:
-      - '127.0.0.1:3000:3000'
+      - '0.0.0.0:3000:3000'
     depends_on:
       - db
       - redis
       # - es
     volumes:
       - ./public/system:/mastodon/public/system
+      #- ./public:/mastodon/public
 
   streaming:
-    build: .
-    image: tootsuite/mastodon
+    #build: .
+    image: tootsuite/mastodon:v4.1.0rc2
     restart: always
     env_file: .env.production
     command: node ./streaming
@@ -88,14 +93,14 @@ services:
       # prettier-ignore
       test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1']
     ports:
-      - '127.0.0.1:4000:4000'
+      - '0.0.0.0:4000:4000'
     depends_on:
       - db
       - redis
 
   sidekiq:
-    build: .
-    image: tootsuite/mastodon
+    #build: .
+    image: tootsuite/mastodon:v4.1.0rc2
     restart: always
     env_file: .env.production
     command: bundle exec sidekiq
@@ -126,6 +131,22 @@ services:
   #   networks:
   #     - external_network
   #     - internal_network
+  #reverse-proxy:
+  #  extra_hosts:
+  #    - "host.docker.internal:host-gateway"
+  #  image: nginx:latest
+  #  volumes:
+     #- ./mount:/etc/nginx
+     # - ./mount/sites-enabled:/etc/nginx/sites-enabled
+     # - ./mount/ssl:/etc/nginx/ssl
+     #- ./nginx/nginx/:/etc/nginx
+     #- ./nginx/nginx/conf.d:/etc/nginx/conf.d
+     #- ./nginx/nginx/sites-enabled:/etc/nginx/sites-enabled
+     #- ./nginx/nginx/ssl:/etc/nginx/ssl
+     # - ../../public:/etc/public
+ #   ports:
+ #     - "80:80"
+ #     - "443:443"
 
 networks:
   external_network:
